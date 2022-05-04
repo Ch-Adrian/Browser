@@ -3,7 +3,7 @@ from tkinter import *
 import tkinter.font as tkFont
 import webbrowser
 from search import read_sparse
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import showinfo, showerror
 
 frame = Tk()
 
@@ -13,7 +13,6 @@ frame.resizable(False, False)
 font = tkFont.Font(family='Courier New Baltic', size=100, weight="bold")
 search_string = StringVar(frame)
 is_IDF = BooleanVar(frame)
-is_Norm = BooleanVar(frame)
 
 search_label = Label(frame, text="Search", font=font)
 search_label.place(x=180, y=60)
@@ -33,8 +32,10 @@ def run_search():
     for lab in link_labels:
         lab.place_forget()
     
-    link_list = read_sparse(search_string.get(), isNorm=is_Norm.get(), isIDF=is_IDF.get())
-
+    link_list = read_sparse(search_string.get(), isIDF=is_IDF.get())
+    if len(link_list) == 0:
+        showerror("Error", "Please enter text.")
+        return
     tmp_lab = Label(frame, text="Results: ")
     tmp_lab.place(x=30, y=340)
     link_labels.append(tmp_lab)
@@ -47,9 +48,6 @@ def run_search():
 
 idf_check = Checkbutton(frame,text='use IDF', variable=is_IDF, onvalue=True, offvalue=False)
 idf_check.place(x=30, y=300)
-
-norm_check = Checkbutton(frame,text='use Norm', variable=is_Norm, onvalue=True, offvalue=False)
-norm_check.place(x=100, y=300)
 
 b1 = Button(frame, text = "Search", command=run_search)
 b1.place(x = 350, y = 300)

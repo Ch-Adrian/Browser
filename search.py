@@ -2,6 +2,7 @@ import numpy as np
 import scipy.sparse
 import time
 import scipy.sparse.linalg
+import re
 
 def create_vector(vector_path):
     vec = []
@@ -23,12 +24,11 @@ def create_model(vector, size):
 def prepare_input(search_input):
     
     model = create_model(create_vector("model_vector.txt"), 200000)
-    
-    if type(search_input) == type(""):
-        search_input = search_input.split(" ")
-    elif len(search_input) < 1:
+
+    if len(search_input) < 1:
         return []
     
+    search_input = re.findall("[A-Za-z]+[-']?[A-Za-z]+", search_input)
     dict_vec = {}
     dict_model = {}
     
@@ -91,22 +91,19 @@ def show_links(result):
     file.close()
     return links_list
 
-def read_sparse(search_input, isNorm=True, isIDF=True):
-    # print(isNorm, isIDF)
+def read_sparse(search_input, isIDF=True):
     print("Looking for: ",search_input)
     start = time.time()
     vec = prepare_input(search_input)
+    if type(vec) == type([]) and len(vec) == 0:
+        return []
     stop = time.time()
     print("Preparation time: ", stop-start)
     
     start = time.time()
-    if isNorm == False and isIDF == False:
-        fileOUT = open("prepared_matrix_noNORM.txt", "r")
-    elif isNorm == False and isIDF == True:
-        fileOUT = open("prepared_matrix_noNORM_withIDF.txt", "r")
-    elif isNorm == True and isIDF == False:
+    if isIDF == False:
         fileOUT = open("prepared_matrix_with_NORM.txt", "r")
-    elif isNorm == True and isIDF == True:
+    elif isIDF == True:
         fileOUT = open("prepared_matrix_withNORM_withIDF.txt", "r")
 
     data = []
